@@ -1,0 +1,19 @@
+{
+  "name": "file-manager",
+  "version": "1.0.0",
+  "description": "simple file manager on Node JS",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Taneros/file-manager.git"
+  },
+  "author": "Taneros",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Taneros/file-manager/issues"
+  },
+  "homepage": "https://github.com/Taneros/file-manager#readme"
+}
