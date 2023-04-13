@@ -4,24 +4,39 @@ process.stdin.setEncoding('utf8')
 process.stdin.resume
 
 import os from 'os'
+import fs from 'fs';
 
 const homeDir=os.homedir()
 
-console.log(`app.js - line: 10 ->> homeDir`, homeDir)
-
 const app = async ( ) => {
   
-  console.log(process.argv)
+  const args = process.argv.slice(2).toString().split('=')[1]
+  
+  console.log(`Welcome to the File Manager, ${args}!`)
+  
+  console.log(`You are currently in path_to_working_directory, ${homeDir}!`)
 
   process.stdin.on('data',(data) => {
+    console.log(`app.js - line: 20 ->> data`, data)
     
-    console.log(data)
+    switch (data) {
+      case 'ls':
+        
+        fs.readdir(homeDir,(err, files) => {
+          if(err) {
+            console.log(`app.js - line: 26 ->> err ls`, err)
+          }
+
+          files.forEach(element => {
+            console.log(`app.js - line: 30 ->> file`, element)
+          });
+        })
+        
+        break;
     
-    // readline.createInterface({
-    //   input: process.stdin,
-    //   output: process.stdout
-  
-    // })
+      default:
+        break;
+    }
     
 
   })
