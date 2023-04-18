@@ -1,7 +1,7 @@
 import readline from 'readline';
 import os from 'os'
 import fs from 'fs';
-import {stat} from 'fs/promises'
+import {stat, opendir} from 'fs/promises'
 import path from 'path';
 import {fileURLToPath} from 'url';
 
@@ -27,6 +27,8 @@ const app=async () => {
 
   console.log(`app.js - line: 28 ->> dirName`, dirName)
 
+
+
   process.stdin.on('data',(data) => {
     console.log(`app.js - line: 20 ->> data`,data.split('\n'))
     data = data.split('\n')[0]
@@ -36,22 +38,32 @@ const app=async () => {
       // case /ls/.test(data):
       case 'ls':
         
-        fs.readdir(homeDir,(err,files) => {
+        fs.readdir(homeDir,{withFileTypes: true}, (err, files) => {
           if(err) {
             console.log(`app.js - line: 26 ->> err ls`,err)
           }
 
-          files=files.map(async (file,idx) => {
-            
-            const isDir = (await stat(homeDir)).isDirectory()
+          console.log(`app.js - line: 46 ->> files`,files[0].isFile())
+          
 
-            return ({
-              Name: file,
-              Type: isDir ? 'directory' : 'file'
-            })
-          })
 
+          // files = files.map(file => {
+          //   if (fs.lstatSync(path.resolve(homeDir, file)).isDirectory()) {
+          //     return ({
+          //       Name: file,
+          //       Type: 'directory'
+          //     })
+          //   } else {
+          //     return ({
+          //       Name: file,
+          //       Type: 'file'
+          //     })
+          //   }
+          // });
+          
+          // console.table(files)
         })
+
         
         break;
     
