@@ -1,71 +1,87 @@
 import readline from 'readline';
-import os from 'os'
+import os, {homedir} from 'os'
 import fs from 'fs';
 import {stat, opendir} from 'fs/promises'
 import path from 'path';
 import {fileURLToPath} from 'url';
 
 process.stdin.setEncoding('utf8')
-// process.stdin.resume
+process.stdin.resume
 
-const scriptPath=fileURLToPath(import.meta.url)
+// const scriptPath=fileURLToPath(import.meta.url)
 
-const dirName=path.dirname(scriptPath)
+// const dirName=path.dirname(scriptPath)
 
-const pathToReadFile=path.join(dirName)
+// const pathToReadFile=path.join(dirName)
 
-const homeDir=os.homedir()
+let homeDir=os.homedir()
 
 
 const app=async () => {
   
   const args = process.argv.slice(2).toString().split('=')[1]
   
-  console.log(`Welcome to the File Manager, ${args}!`)
+  console.log(`Welcome to the File Manager, ${args}!\n`)
   
-  console.log(`You are currently in path_to_working_directory, ${homeDir}!`)
+  console.log(`You are currently in path_to_working_directory, ${homeDir}\n`)
 
-  console.log(`app.js - line: 28 ->> dirName`, dirName)
+  // console.log(`app.js - line: 28 ->> dirName`, dirName)
 
 
 
   process.stdin.on('data',(data) => {
-    console.log(`app.js - line: 20 ->> data`,data.split('\n'))
-    data = data.split('\n')[0]
+
+    console.log(`app.js - line: 34 ->> data.trim().split(' ')`,data.trim().split(' '))
     
-    switch (data) {
+
+    
+    console.log(`app.js - line: 20 ->> data`,data.split(' '))
+    
+    
+    // const command = data.trim().split(' ') // ['']
+    
+    const [command, ...args] = data.trim().split(' ')
+     
+    switch (command) {
+    
+
+      case 'up':
       
-      // case /ls/.test(data):
+        let oneStepBack=path.join(homeDir,'../')
+
+        homeDir = oneStepBack
+        
+        console.log(oneStepBack)
+        
+      break;
+
       case 'ls':
         
         fs.readdir(homeDir,{withFileTypes: true}, (err, files) => {
           if(err) {
             console.log(`app.js - line: 26 ->> err ls`,err)
-          }
+          }          
 
-          console.log(`app.js - line: 46 ->> files`,files[0].isFile())
+          files = files.map((file) => ({
+            Name: file.name,
+            Type: file.isDirectory() ? 'directory' : 'file'
+          }))
           
-
-
-          // files = files.map(file => {
-          //   if (fs.lstatSync(path.resolve(homeDir, file)).isDirectory()) {
-          //     return ({
-          //       Name: file,
-          //       Type: 'directory'
-          //     })
-          //   } else {
-          //     return ({
-          //       Name: file,
-          //       Type: 'file'
-          //     })
-          //   }
-          // });
-          
-          // console.table(files)
+          console.table(files)
         })
 
         
         break;
+      
+      case 'cat':
+        console.log(`app.js - line: 86 ->> cat`, command, args)
+        
+        fs.createReadStream(path.resolve(homeDir, args[0])).pipe(process.stdout)
+
+        
+        break;
+      
+      
     
       default:
         break;
@@ -78,6 +94,8 @@ const app=async () => {
 }
 
 await app()
+
+
 
 
 
