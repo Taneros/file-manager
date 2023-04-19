@@ -19,7 +19,9 @@ let homeDir=os.homedir()
 
 const app=async () => {
   
-  const args = process.argv.slice(2).toString().split('=')[1]
+  const args=process.argv.slice(2).toString().split('=')[1]
+  
+  console.log(`app.js - line: 24 ->>  process.argv`,  process.argv)
   
   console.log(`Welcome to the File Manager, ${args}!\n`)
   
@@ -31,7 +33,7 @@ const app=async () => {
 
   process.stdin.on('data',(data) => {
 
-    console.log(`app.js - line: 34 ->> data.trim().split(' ')`,data.trim().split(' '))
+    // console.log(`app.js - line: 34 ->> data.trim().split(' ')`,data.trim().split(' '))
     
 
     
@@ -40,8 +42,11 @@ const app=async () => {
     
     // const command = data.trim().split(' ') // ['']
     
-    const [command, ...args] = data.trim().split(' ')
-     
+    const [command,...args]=data.trim().split(' ')
+    
+
+
+    
     switch (command) {
     
 
@@ -56,6 +61,11 @@ const app=async () => {
       break;
 
       case 'ls':
+
+        //TODO 
+        /**
+          * sort by direcotry and name and file and name
+          **/
         
         fs.readdir(homeDir,{withFileTypes: true}, (err, files) => {
           if(err) {
@@ -81,6 +91,38 @@ const app=async () => {
         
         break;
       
+      case 'add':
+
+        console.log(`app.js - line: 88 ->> add`,)
+
+        fs.createWriteStream(path.resolve(homeDir,args[0]))
+        
+        
+        break;
+      
+      case 'rn':
+
+        console.log(`app.js - line: 102 ->> args[0] args[1]`, args[0].trim(), args[1].trim() )
+
+        fs.rename(path.resolve(homeDir,args[0]), path.resolve(homeDir,args[1]), (err) => {
+          if(err) {
+            console.log(`app.js - line: 104 ->> error rename`)
+          }
+        })
+        
+        break;
+      
+      case 'cp':
+
+        
+
+      fs.mkdirSync(path.dirname(path.resolve(homeDir, args[1])));
+
+        
+        
+      fs.createReadStream(path.resolve(homeDir,args[0])).pipe(fs.createWriteStream(path.resolve(homeDir,args[1]))).on('finish', () => {console.log(`app.js - line: 115 ->> copy done!`, )})
+        
+        break;
       
     
       default:
