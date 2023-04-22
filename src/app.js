@@ -1,11 +1,12 @@
 import readline from 'readline';
-import os, {homedir} from 'os'
 import fs from 'fs';
-import {stat, opendir} from 'fs/promises'
+import { stat, opendir } from 'fs/promises'
 import path from 'path';
-import {fileURLToPath} from 'url';
+import { fileURLToPath } from 'url';
+import { EOL, cpus, homedir, userInfo, arch } from 'os';
 
-process.stdin.setEncoding('utf8')
+
+process.stdin.setEncoding( 'utf8' )
 process.stdin.resume
 
 // const scriptPath=fileURLToPath(import.meta.url)
@@ -14,52 +15,52 @@ process.stdin.resume
 
 // const pathToReadFile=path.join(dirName)
 
-let homeDir=os.homedir()
+let homeDir = homedir()
 
 
-const app=async () => {
-  
-  const args=process.argv.slice(2).toString().split('=')[1]
-  
-  console.log(`app.js - line: 24 ->>  process.argv`,  process.argv)
-  
-  console.log(`Welcome to the File Manager, ${args}!\n`)
-  
-  console.log(`You are currently in path_to_working_directory, ${homeDir}\n`)
+const app = async () => {
+
+  const args = process.argv.slice( 2 ).toString().split( '=' )[ 1 ]
+
+  console.log( `app.js - line: 24 ->>  process.argv`, process.argv )
+
+  console.log( `Welcome to the File Manager, ${ args }!\n` )
+
+  console.log( `You are currently in path_to_working_directory, ${ homeDir }\n` )
 
   // console.log(`app.js - line: 28 ->> dirName`, dirName)
 
-  process.stdin.on('data',(data) => {
+  process.stdin.on( 'data', ( data ) => {
 
     // console.log(`app.js - line: 34 ->> data.trim().split(' ')`,data.trim().split(' '))
-    
-    console.log(`app.js - line: 20 ->> data`,data.split(' '))
-    
-    // const command = data.trim().split(' ') // ['']
-    
-    const [command,...args]=data.trim().split(' ')
 
-    console.log(`app.js - line: 47 ->> command, args`, command, args )
-    
-    switch (command) {
+    console.log( `app.js - line: 20 ->> data`, data.split( ' ' ) )
+
+    // const command = data.trim().split(' ') // ['']
+
+    const [ command, ...args ] = data.trim().split( ' ' )
+
+    console.log( `app.js - line: 47 ->> command, args`, command, args )
+
+    switch ( command ) {
 
       case 'up':
-      
-        let oneStepBack=path.join(homeDir,'../')
 
-        homeDir=oneStepBack
-        
-        console.log('\nCurrent directory is ', homeDir, '\n')
-        
+        let oneStepBack = path.join( homeDir, '../' )
+
+        homeDir = oneStepBack
+
+        console.log( '\nCurrent directory is ', homeDir, '\n' )
+
         break;
-        
-        case 'cd':
-          
-          let changeDir = path.join(homeDir, args [0])
-          
-          homeDir = changeDir
-          
-          console.log('\nCurrent directory is ', homeDir, '\n')
+
+      case 'cd':
+
+        let changeDir = path.join( homeDir, args[ 0 ] )
+
+        homeDir = changeDir
+
+        console.log( '\nCurrent directory is ', homeDir, '\n' )
         break;
 
       case 'ls':
@@ -68,84 +69,130 @@ const app=async () => {
         /**
           * sort by direcotry and name and file and name
           **/
-        
-        fs.readdir(homeDir,{withFileTypes: true}, (err, files) => {
-          if(err) {
-            console.log(`app.js - line: 26 ->> err ls`,err)
-          }          
 
-          files = files.map((file) => ({
+        fs.readdir( homeDir, { withFileTypes: true }, ( err, files ) => {
+          if ( err ) {
+            console.log( `app.js - line: 26 ->> err ls`, err )
+          }
+
+          files = files.map( ( file ) => ( {
             Name: file.name,
             Type: file.isDirectory() ? 'directory' : 'file'
-          }))
-          
-          console.table(files)
-        })
+          } ) )
+
+          console.table( files )
+        } )
 
         break;
-      
+
       case 'cat':
-        
-        fs.createReadStream(path.resolve(homeDir, args[0])).pipe(process.stdout)
+
+        fs.createReadStream( path.resolve( homeDir, args[ 0 ] ) ).pipe( process.stdout )
 
         break;
-      
+
       case 'add':
 
-        fs.createWriteStream(path.resolve(homeDir,args[0]))
-        
+        fs.createWriteStream( path.resolve( homeDir, args[ 0 ] ) )
+
         break;
-      
+
       case 'rn':
 
-        fs.rename(path.resolve(homeDir,args[0]), path.resolve(homeDir,args[1]), (err) => {
-          if(err) {
-            console.log(`app.js - line: 104 ->> error rename`)
+        fs.rename( path.resolve( homeDir, args[ 0 ] ), path.resolve( homeDir, args[ 1 ] ), ( err ) => {
+          if ( err ) {
+            console.log( `app.js - line: 104 ->> error rename` )
           }
-        })
-        
-      break;
-      
-      case 'cp':
-        
-      fs.mkdir(path.join(homeDir,args[1]), { recursive: true }, (err) => {
-        if(err) {
-          console.log('Error creating new folder!')
-        }
-
-        fs.createReadStream(path.join(homeDir,args[0])).pipe(fs.createWriteStream(path.join(homeDir, args[1], args[0]))).on('finish',() => {
-          console.log(`\nCopying file done!\n`)
-        })
-
-    })
-        
-      
-      break;
-      
-      case 'mv':
-
-        fs.mkdir(path.join(homeDir,args[1]), { recursive: true }, (err) => {
-          if(err) {
-            console.log('Error creating new folder!')
-          }
-
-          fs.createReadStream(path.join(homeDir,args[0])).pipe(fs.createWriteStream(path.join(homeDir, args[1], args[0]))).on('finish',() => {
-          
-            fs.unlink(path.join(homeDir,args[0]) ,(err) => {
-              if(err) {
-                console.log("\nCould not delete the file. " + err, + '\n')
-              }
-            });
-            console.log(`\nMoving file done!\n`)
-          })
-      })
+        } )
 
         break;
-      
+
+      case 'cp':
+
+        fs.mkdir( path.join( homeDir, args[ 1 ] ), { recursive: true }, ( err ) => {
+          if ( err ) {
+            console.log( 'Error creating new folder!' )
+          }
+
+          fs.createReadStream( path.join( homeDir, args[ 0 ] ) ).pipe( fs.createWriteStream( path.join( homeDir, args[ 1 ], args[ 0 ] ) ) ).on( 'finish', () => {
+            console.log( `\nCopying file done!\n` )
+          } )
+
+        } )
+
+
+
+        break;
+
+      case 'mv':
+
+        fs.mkdir( path.join( homeDir, args[ 1 ] ), { recursive: true }, ( err ) => {
+          if ( err ) {
+            console.log( 'Error creating new folder!' )
+          }
+
+          fs.createReadStream( path.join( homeDir, args[ 0 ] ) ).pipe( fs.createWriteStream( path.join( homeDir, args[ 1 ], args[ 0 ] ) ) ).on( 'finish', () => {
+
+            fs.unlink( path.join( homeDir, args[ 0 ] ), ( err ) => {
+              if ( err ) {
+                console.log( "\nCould not delete the file. " + err, + '\n' )
+              }
+            } );
+            console.log( `\nMoving file done!\n` )
+          } )
+        } )
+
+        break;
+
+      case 'os':
+
+        switch ( true ) {
+
+          case /EOL/.test( args[ 0 ] ):
+
+            console.log( '\nSystem EOL: ', JSON.stringify( EOL ) )
+
+            break;
+
+          case /cpus/.test( args[ 0 ] ):
+
+            console.log('\nCPU Model: ', cpus()[0].model)
+            console.log('\nNumber of cores: ', cpus().length)
+
+            const cpusInfo = cpus().map((cpu) => ({Clock_GHz: (cpu.speed/1000).toFixed(2)}))
+
+            console.table(cpusInfo)
+
+            break;
+          
+          case /homedir/.test( args[0] ):
+            
+            console.log('Home directory: ', homedir() )
+            
+            break;
+         
+          case /username/.test( args[0] ):
+            
+            console.log('System user name: ', userInfo().username )
+            
+            break;
+          
+          case /arch/.test( args[0] ):
+            
+            console.log('CPU architecture: ', process.env['PROCESSOR_ARCHITECTURE']. arch() )
+            
+            break;
+
+          default:
+            break;
+        }
+
+        break;
+
       default:
         break;
     }
-  })
+  } )
 }
 
 await app()
