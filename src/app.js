@@ -29,16 +29,11 @@ const app=async () => {
 
   // console.log(`app.js - line: 28 ->> dirName`, dirName)
 
-
-
   process.stdin.on('data',(data) => {
 
     // console.log(`app.js - line: 34 ->> data.trim().split(' ')`,data.trim().split(' '))
     
-
-    
     console.log(`app.js - line: 20 ->> data`,data.split(' '))
-    
     
     // const command = data.trim().split(' ') // ['']
     
@@ -87,7 +82,6 @@ const app=async () => {
           console.table(files)
         })
 
-        
         break;
       
       case 'cat':
@@ -113,61 +107,45 @@ const app=async () => {
       break;
       
       case 'cp':
-
-      // fs.mkdirSync(path.dirname(path.resolve(homeDir, args[1])));
-
-      // fs.createReadStream(path.resolve(homeDir,args[0])).pipe(fs.createWriteStream(path.resolve(homeDir, args[1]))).on('finish', () => {console.log(`Copying file done!`)})
         
-        
-      fs.mkdir(path.resolve(homeDir,args[1]), { recursive: true }, (err) => {
+      fs.mkdir(path.join(homeDir,args[1]), { recursive: true }, (err) => {
         if(err) {
           console.log('Error creating new folder!')
         }
 
-        fs.createReadStream(path.resolve(homeDir,args[0])).pipe(fs.createWriteStream(path.join(homeDir, args[1], args[0]))).on('finish',() => {
+        fs.createReadStream(path.join(homeDir,args[0])).pipe(fs.createWriteStream(path.join(homeDir, args[1], args[0]))).on('finish',() => {
           console.log(`\nCopying file done!\n`)
         })
 
     })
         
-       
+      
       break;
       
       case 'mv':
 
-      
-        fs.mkdir(path.resolve(homeDir,args[1]), { recursive: true }, (err) => {
+        fs.mkdir(path.join(homeDir,args[1]), { recursive: true }, (err) => {
           if(err) {
             console.log('Error creating new folder!')
           }
 
-          fs.createReadStream(path.resolve(homeDir,args[0])).pipe(fs.createWriteStream(path.join(homeDir, args[1], args[0]))).on('finish',() => {
+          fs.createReadStream(path.join(homeDir,args[0])).pipe(fs.createWriteStream(path.join(homeDir, args[1], args[0]))).on('finish',() => {
           
-            fs.unlink(path.resolve(homeDir,args[0]) ,(err) => {
+            fs.unlink(path.join(homeDir,args[0]) ,(err) => {
               if(err) {
                 console.log("\nCould not delete the file. " + err, + '\n')
               }
             });
-            
             console.log(`\nMoving file done!\n`)
           })
-
       })
-
-       
-
-      
 
         break;
       
       default:
         break;
     }
-    
-
   })
-
-
 }
 
 await app()
