@@ -43,22 +43,29 @@ const app=async () => {
     // const command = data.trim().split(' ') // ['']
     
     const [command,...args]=data.trim().split(' ')
-    
 
-
+    console.log(`app.js - line: 47 ->> command, args`, command, args )
     
     switch (command) {
-    
 
       case 'up':
       
         let oneStepBack=path.join(homeDir,'../')
 
-        homeDir = oneStepBack
+        homeDir=oneStepBack
         
-        console.log(oneStepBack)
+        console.log('\nCurrent directory is ', homeDir, '\n')
         
-      break;
+        break;
+        
+        case 'cd':
+          
+          let changeDir = path.join(homeDir, args [0])
+          
+          homeDir = changeDir
+          
+          console.log('\nCurrent directory is ', homeDir, '\n')
+        break;
 
       case 'ls':
 
@@ -84,25 +91,18 @@ const app=async () => {
         break;
       
       case 'cat':
-        console.log(`app.js - line: 86 ->> cat`, command, args)
         
         fs.createReadStream(path.resolve(homeDir, args[0])).pipe(process.stdout)
 
-        
         break;
       
       case 'add':
 
-        console.log(`app.js - line: 88 ->> add`,)
-
         fs.createWriteStream(path.resolve(homeDir,args[0]))
-        
         
         break;
       
       case 'rn':
-
-        console.log(`app.js - line: 102 ->> args[0] args[1]`, args[0].trim(), args[1].trim() )
 
         fs.rename(path.resolve(homeDir,args[0]), path.resolve(homeDir,args[1]), (err) => {
           if(err) {
@@ -110,21 +110,56 @@ const app=async () => {
           }
         })
         
-        break;
+      break;
       
       case 'cp':
 
-        
+      // fs.mkdirSync(path.dirname(path.resolve(homeDir, args[1])));
 
-      fs.mkdirSync(path.dirname(path.resolve(homeDir, args[1])));
+      // fs.createReadStream(path.resolve(homeDir,args[0])).pipe(fs.createWriteStream(path.resolve(homeDir, args[1]))).on('finish', () => {console.log(`Copying file done!`)})
+        
+        
+      fs.mkdir(path.resolve(homeDir,args[1]), { recursive: true }, (err) => {
+        if(err) {
+          console.log('Error creating new folder!')
+        }
 
+        fs.createReadStream(path.resolve(homeDir,args[0])).pipe(fs.createWriteStream(path.join(homeDir, args[1], args[0]))).on('finish',() => {
+          console.log(`\nCopying file done!\n`)
+        })
+
+    })
         
-        
-      fs.createReadStream(path.resolve(homeDir,args[0])).pipe(fs.createWriteStream(path.resolve(homeDir,args[1]))).on('finish', () => {console.log(`app.js - line: 115 ->> copy done!`, )})
-        
+       
+      break;
+      
+      case 'mv':
+
+      
+        fs.mkdir(path.resolve(homeDir,args[1]), { recursive: true }, (err) => {
+          if(err) {
+            console.log('Error creating new folder!')
+          }
+
+          fs.createReadStream(path.resolve(homeDir,args[0])).pipe(fs.createWriteStream(path.join(homeDir, args[1], args[0]))).on('finish',() => {
+          
+            fs.unlink(path.resolve(homeDir,args[0]) ,(err) => {
+              if(err) {
+                console.log("\nCould not delete the file. " + err, + '\n')
+              }
+            });
+            
+            console.log(`\nMoving file done!\n`)
+          })
+
+      })
+
+       
+
+      
+
         break;
       
-    
       default:
         break;
     }
@@ -139,5 +174,8 @@ await app()
 
 
 
+// normalize
 
+// let newPath = path.resolve(homeDir,args[1])
 
+// newPath=newPath.replace(/^\.*\/|\/?[^\/]+\.[a-z]+|\/$/g,'')
