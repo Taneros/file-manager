@@ -9,8 +9,6 @@ import {pipeline} from 'stream';
 import zlib from 'zlib';
 
 
-
-
 process.stdin.setEncoding( 'utf8' )
 process.stdin.resume
 
@@ -209,7 +207,6 @@ const app = async () => {
       
       case 'compress':
 
-        
       fs.mkdir( path.join( homeDir, args[1] ), {recursive: true}, ( err ) => {
         if ( err ) {
           console.log( 'Error creating new folder!' )
@@ -218,11 +215,32 @@ const app = async () => {
         const readFileToCompress = fs.createReadStream( path.join( homeDir, args[0] ) )
         const writeCompressedFile = fs.createWriteStream( path.join( homeDir, args[1], `${ args[0] }.br` ) )
         
-        const gzip = zlib.createBrotliCompress();
+        const brotliCompress = zlib.createBrotliCompress();
 
-        pipeline( readFileToCompress, gzip, writeCompressedFile, ( err ) => {
-          if(err) console.log(`app.js - line: 218 ->> err`,err )
-        }).on('finish', () => {console.log(`app.js - line: 219 ->> finished!`, )})
+        pipeline( readFileToCompress, brotliCompress, writeCompressedFile, ( err ) => {
+          if(err) console.log(`\nError compressing!\n`,err )
+        }).on('finish', () => {console.log(`\nCompressed successfully!\n`, )})
+      } )
+        
+        break;
+      
+      case 'decompress':
+
+      const decompressedFileName = path.basename(path.join( homeDir, args[0] )   ).split('.br')[0]
+        
+      fs.mkdir( path.join( homeDir, args[1] ), {recursive: true}, ( err ) => {
+        if ( err ) {
+          console.log( 'Error creating new folder!' )
+        }
+          
+        const readFileToCompress = fs.createReadStream( path.join( homeDir, args[0] ) )
+        const writeCompressedFile = fs.createWriteStream( path.join( homeDir, args[1], decompressedFileName  ) )
+        
+        const brotliDecompress = zlib.createBrotliDecompress();
+
+        pipeline( readFileToCompress, brotliDecompress, writeCompressedFile, ( err ) => {
+          if(err) console.log(`\nError decompressing!\n`,err )
+        }).on('finish', () => {console.log(`\nDecompressed successfully!\n`, )})
       } )
         
         break;
