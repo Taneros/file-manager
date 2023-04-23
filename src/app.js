@@ -1,48 +1,35 @@
-import readline from 'readline';
+import crypto from 'crypto';
 import fs from 'fs';
-import {stat, opendir} from 'fs/promises'
+import {arch, cpus, EOL, homedir, userInfo} from 'os';
 import path from 'path';
-import {fileURLToPath} from 'url';
-import {EOL, cpus, homedir, userInfo, arch} from 'os';
-import crypto from 'crypto'
 import {pipeline} from 'stream';
 import zlib from 'zlib';
 
 
 process.stdin.setEncoding( 'utf8' )
-process.stdin.resume
-
-// const scriptPath=fileURLToPath(import.meta.url)
-
-// const dirName=path.dirname(scriptPath)
-
-// const pathToReadFile=path.join(dirName)
+// process.stdin.resume
 
 let homeDir = homedir()
 
 const app = async () => {
 
-  const args = process.argv.slice( 2 ).toString().split( '=' )[1]
+  const user = process.argv.slice( 2 ).toString().split( '=' )[1]
 
-  console.log( `app.js - line: 24 ->>  process.argv`, process.argv )
-
-  console.log( `Welcome to the File Manager, ${ args }!\n` )
+  console.log( `Welcome to the File Manager, ${ user }!\n` )
 
   console.log( `You are currently in path_to_working_directory, ${ homeDir }\n` )
 
-  // console.log(`app.js - line: 28 ->> dirName`, dirName)
 
   process.stdin.on( 'data', ( data ) => {
 
-    // console.log(`app.js - line: 34 ->> data.trim().split(' ')`,data.trim().split(' '))
+    // if ( data.toString() === '\u0003' ) {
+      
+    //   console.log('Ctrl+C pressed. Exiting.');
+    //   process.exit();
 
-    console.log( `app.js - line: 20 ->> data`, data.split( ' ' ) )
-
-    // const command = data.trim().split(' ') // ['']
+    // }
 
     const [command, ...args] = data.trim().split( ' ' )
-
-    console.log( `app.js - line: 47 ->> command, args`, command, args )
 
     switch ( command ) {
 
@@ -247,11 +234,28 @@ const app = async () => {
       } )
         
         break;
+      
+      case '.exit':
+
+        console.log(`\nThank you for using File Manager, ${user}, goodbye!`);
+
+        process.exit(0)
+        
+        break;
 
       default:
         break;
     }
   } )
+
+  process.on( 'SIGINT', () => {
+    
+      console.log(`\nThank you for using File Manager, ${user}, goodbye!`);
+
+      process.exit(0)
+  } )
+  
+
 }
 
 await app()
