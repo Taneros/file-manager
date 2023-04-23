@@ -5,6 +5,9 @@ import path from 'path';
 import {fileURLToPath} from 'url';
 import {EOL, cpus, homedir, userInfo, arch} from 'os';
 import crypto from 'crypto'
+import {pipeline} from 'stream';
+import zlib from 'zlib';
+
 
 
 
@@ -200,6 +203,27 @@ const app = async () => {
         readFileHashStream.on( 'end', () => {
           console.log('\nSHA256: ', hash.digest('hex'));
         })
+        
+        break;
+      
+      
+      case 'compress':
+
+        
+      fs.mkdir( path.join( homeDir, args[1] ), {recursive: true}, ( err ) => {
+        if ( err ) {
+          console.log( 'Error creating new folder!' )
+        }
+          
+        const readFileToCompress = fs.createReadStream( path.join( homeDir, args[0] ) )
+        const writeCompressedFile = fs.createWriteStream( path.join( homeDir, args[1], `${ args[0] }.br` ) )
+        
+        const gzip = zlib.createBrotliCompress();
+
+        pipeline( readFileToCompress, gzip, writeCompressedFile, ( err ) => {
+          if(err) console.log(`app.js - line: 218 ->> err`,err )
+        }).on('finish', () => {console.log(`app.js - line: 219 ->> finished!`, )})
+      } )
         
         break;
 
