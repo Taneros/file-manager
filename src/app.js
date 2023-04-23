@@ -77,12 +77,15 @@ const app = async () => {
             console.log( `app.js - line: 26 ->> err ls`, err )
           }
 
-          files = files.map( ( file ) => ( {
+          const directoriesList = files.filter( file => file.isDirectory() ).sort( ( a, b ) => a.name - b.name );
+          const filesList = files.filter( file => !file.isDirectory() ).sort( ( a, b ) => a.name - b.name );
+
+          const sortedDirList = [...directoriesList, ...filesList].map( ( file ) => ( {
             Name: file.name,
             Type: file.isDirectory() ? 'directory' : 'file'
           } ) )
 
-          console.table( files )
+          console.table(sortedDirList )
         } )
 
         break;
