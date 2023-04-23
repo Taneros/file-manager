@@ -1,9 +1,11 @@
 import readline from 'readline';
 import fs from 'fs';
-import { stat, opendir } from 'fs/promises'
+import {stat, opendir} from 'fs/promises'
 import path from 'path';
-import { fileURLToPath } from 'url';
-import { EOL, cpus, homedir, userInfo, arch } from 'os';
+import {fileURLToPath} from 'url';
+import {EOL, cpus, homedir, userInfo, arch} from 'os';
+import crypto from 'crypto'
+
 
 
 process.stdin.setEncoding( 'utf8' )
@@ -17,10 +19,9 @@ process.stdin.resume
 
 let homeDir = homedir()
 
-
 const app = async () => {
 
-  const args = process.argv.slice( 2 ).toString().split( '=' )[ 1 ]
+  const args = process.argv.slice( 2 ).toString().split( '=' )[1]
 
   console.log( `app.js - line: 24 ->>  process.argv`, process.argv )
 
@@ -38,7 +39,7 @@ const app = async () => {
 
     // const command = data.trim().split(' ') // ['']
 
-    const [ command, ...args ] = data.trim().split( ' ' )
+    const [command, ...args] = data.trim().split( ' ' )
 
     console.log( `app.js - line: 47 ->> command, args`, command, args )
 
@@ -56,7 +57,7 @@ const app = async () => {
 
       case 'cd':
 
-        let changeDir = path.join( homeDir, args[ 0 ] )
+        let changeDir = path.join( homeDir, args[0] )
 
         homeDir = changeDir
 
@@ -70,7 +71,7 @@ const app = async () => {
           * sort by direcotry and name and file and name
           **/
 
-        fs.readdir( homeDir, { withFileTypes: true }, ( err, files ) => {
+        fs.readdir( homeDir, {withFileTypes: true}, ( err, files ) => {
           if ( err ) {
             console.log( `app.js - line: 26 ->> err ls`, err )
           }
@@ -87,19 +88,19 @@ const app = async () => {
 
       case 'cat':
 
-        fs.createReadStream( path.resolve( homeDir, args[ 0 ] ) ).pipe( process.stdout )
+        fs.createReadStream( path.resolve( homeDir, args[0] ) ).pipe( process.stdout )
 
         break;
 
       case 'add':
 
-        fs.createWriteStream( path.resolve( homeDir, args[ 0 ] ) )
+        fs.createWriteStream( path.resolve( homeDir, args[0] ) )
 
         break;
 
       case 'rn':
 
-        fs.rename( path.resolve( homeDir, args[ 0 ] ), path.resolve( homeDir, args[ 1 ] ), ( err ) => {
+        fs.rename( path.resolve( homeDir, args[0] ), path.resolve( homeDir, args[1] ), ( err ) => {
           if ( err ) {
             console.log( `app.js - line: 104 ->> error rename` )
           }
@@ -109,31 +110,27 @@ const app = async () => {
 
       case 'cp':
 
-        fs.mkdir( path.join( homeDir, args[ 1 ] ), { recursive: true }, ( err ) => {
+        fs.mkdir( path.join( homeDir, args[1] ), {recursive: true}, ( err ) => {
           if ( err ) {
             console.log( 'Error creating new folder!' )
           }
 
-          fs.createReadStream( path.join( homeDir, args[ 0 ] ) ).pipe( fs.createWriteStream( path.join( homeDir, args[ 1 ], args[ 0 ] ) ) ).on( 'finish', () => {
+          fs.createReadStream( path.join( homeDir, args[0] ) ).pipe( fs.createWriteStream( path.join( homeDir, args[1], args[0] ) ) ).on( 'finish', () => {
             console.log( `\nCopying file done!\n` )
           } )
-
         } )
-
-
-
         break;
 
       case 'mv':
 
-        fs.mkdir( path.join( homeDir, args[ 1 ] ), { recursive: true }, ( err ) => {
+        fs.mkdir( path.join( homeDir, args[1] ), {recursive: true}, ( err ) => {
           if ( err ) {
             console.log( 'Error creating new folder!' )
           }
 
-          fs.createReadStream( path.join( homeDir, args[ 0 ] ) ).pipe( fs.createWriteStream( path.join( homeDir, args[ 1 ], args[ 0 ] ) ) ).on( 'finish', () => {
+          fs.createReadStream( path.join( homeDir, args[0] ) ).pipe( fs.createWriteStream( path.join( homeDir, args[1], args[0] ) ) ).on( 'finish', () => {
 
-            fs.unlink( path.join( homeDir, args[ 0 ] ), ( err ) => {
+            fs.unlink( path.join( homeDir, args[0] ), ( err ) => {
               if ( err ) {
                 console.log( "\nCould not delete the file. " + err, + '\n' )
               }
@@ -148,45 +145,62 @@ const app = async () => {
 
         switch ( true ) {
 
-          case /EOL/.test( args[ 0 ] ):
+          case /EOL/.test( args[0] ):
 
             console.log( '\nSystem EOL: ', JSON.stringify( EOL ) )
 
             break;
 
-          case /cpus/.test( args[ 0 ] ):
+          case /cpus/.test( args[0] ):
 
-            console.log('\nCPU Model: ', cpus()[0].model)
-            console.log('\nNumber of cores: ', cpus().length)
+            console.log( '\nCPU Model: ', cpus()[0].model )
+            console.log( '\nNumber of cores: ', cpus().length )
 
-            const cpusInfo = cpus().map((cpu) => ({Clock_GHz: (cpu.speed/1000).toFixed(2)}))
+            const cpusInfo = cpus().map( ( cpu ) => ( {Clock_GHz: ( cpu.speed / 1000 ).toFixed( 2 )} ) )
 
-            console.table(cpusInfo)
+            console.table( cpusInfo )
 
             break;
-          
+
           case /homedir/.test( args[0] ):
-            
-            console.log('Home directory: ', homedir() )
-            
+
+            console.log( 'Home directory: ', homedir() )
+
             break;
-         
+
           case /username/.test( args[0] ):
-            
-            console.log('System user name: ', userInfo().username )
-            
+
+            console.log( 'System user name: ', userInfo().username )
+
             break;
-          
+
           case /arch/.test( args[0] ):
-            
-            console.log('CPU architecture: ', process.env['PROCESSOR_ARCHITECTURE']. arch() )
-            
+
+            console.log( 'CPU architecture: ', process.env['PROCESSOR_ARCHITECTURE'], `(${ arch() })` )
+
             break;
 
           default:
             break;
         }
 
+        break;
+      
+      
+      case 'hash':
+
+      const readFileHashStream =  fs.createReadStream(path.join( homeDir, args[0] ))
+      const hash = crypto.createHash( 'sha256' )
+
+        readFileHashStream.on( 'data', ( data ) => {
+          hash.update( data )
+          
+        } )
+
+        readFileHashStream.on( 'end', () => {
+          console.log('\nSHA256: ', hash.digest('hex'));
+        })
+        
         break;
 
       default:
