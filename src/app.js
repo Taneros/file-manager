@@ -36,7 +36,7 @@ const app = async () => {
         break;
 
       case 'cd':
-        
+
         homeDir = cd( homeDir, args )
         
         break;
@@ -238,16 +238,6 @@ const app = async () => {
 
       process.exit(0)
   } )
-  
-
 }
 
 await app()
-
-
-
-// normalize
-
-// let newPath = path.resolve(homeDir,args[1])
-
-// newPath=newPath.replace(/^\.*\/|\/?[^\/]+\.[a-z]+|\/$/g,'')
