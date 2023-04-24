@@ -9,7 +9,8 @@ import {up} from './up.js'
 import {cd} from './cd.js';
 import {ls} from './ls.js';
 import {cat} from './cat.js';
-import { add } from './add.js';
+import {add} from './add.js';
+import { rn } from './rn.js';
 
 
 
@@ -64,11 +65,7 @@ const app = async () => {
 
       case 'rn':
 
-        fs.rename( path.resolve( homeDir, args[0] ), path.resolve( homeDir, args[1] ), ( err ) => {
-          if ( err ) {
-            console.log( `app.js - line: 104 ->> error rename` )
-          }
-        } )
+        rn(homeDir, args)
 
         break;
 
