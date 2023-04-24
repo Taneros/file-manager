@@ -7,7 +7,6 @@ import zlib from 'zlib';
 
 
 process.stdin.setEncoding( 'utf8' )
-// process.stdin.resume
 
 let homeDir = homedir()
 
@@ -21,13 +20,6 @@ const app = async () => {
 
 
   process.stdin.on( 'data', ( data ) => {
-
-    // if ( data.toString() === '\u0003' ) {
-      
-    //   console.log('Ctrl+C pressed. Exiting.');
-    //   process.exit();
-
-    // }
 
     const [command, ...args] = data.trim().split( ' ' )
 
@@ -53,11 +45,6 @@ const app = async () => {
         break;
 
       case 'ls':
-
-        //TODO 
-        /**
-          * sort by direcotry and name and file and name
-          **/
 
         fs.readdir( homeDir, {withFileTypes: true}, ( err, files ) => {
           if ( err ) {
