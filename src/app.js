@@ -8,7 +8,8 @@ import zlib from 'zlib';
 import {up} from './up.js'
 import {cd} from './cd.js';
 import {ls} from './ls.js';
-import { cat } from './cat.js';
+import {cat} from './cat.js';
+import { add } from './add.js';
 
 
 
@@ -51,14 +52,13 @@ const app = async () => {
 
       case 'cat':
 
-        // fs.createReadStream( path.resolve( homeDir, args[0] ) ).pipe( process.stdout )
         cat(homeDir, args)
 
         break;
 
       case 'add':
 
-        fs.createWriteStream( path.resolve( homeDir, args[0] ) )
+        add(homeDir, args)
 
         break;
 
@@ -122,6 +122,7 @@ const app = async () => {
 
             const cpusInfo = cpus().map( ( cpu ) => ( {Clock_GHz: ( cpu.speed / 1000 ).toFixed( 2 )} ) )
 
+            
             console.table( cpusInfo )
 
             break;
