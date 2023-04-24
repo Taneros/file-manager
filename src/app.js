@@ -6,7 +6,8 @@ import {pipeline} from 'stream';
 import zlib from 'zlib';
 
 import {up} from './up.js'
-import { cd } from './cd.js';
+import {cd} from './cd.js';
+import {ls} from './ls.js';
 
 
 
@@ -31,33 +32,19 @@ const app = async () => {
 
       case 'up':
 
-        homeDir = up(homeDir)
+        homeDir = up( homeDir )
 
         break;
 
       case 'cd':
 
         homeDir = cd( homeDir, args )
-        
+
         break;
 
       case 'ls':
 
-        fs.readdir( homeDir, {withFileTypes: true}, ( err, files ) => {
-          if ( err ) {
-            console.log( `app.js - line: 26 ->> err ls`, err )
-          }
-
-          const directoriesList = files.filter( file => file.isDirectory() ).sort( ( a, b ) => a.name - b.name );
-          const filesList = files.filter( file => !file.isDirectory() ).sort( ( a, b ) => a.name - b.name );
-
-          const sortedDirList = [...directoriesList, ...filesList].map( ( file ) => ( {
-            Name: file.name,
-            Type: file.isDirectory() ? 'directory' : 'file'
-          } ) )
-
-          console.table(sortedDirList )
-        } )
+        ls( homeDir )
 
         break;
 
@@ -160,71 +147,71 @@ const app = async () => {
         }
 
         break;
-      
-      
+
+
       case 'hash':
 
-      const readFileHashStream =  fs.createReadStream(path.join( homeDir, args[0] ))
-      const hash = crypto.createHash( 'sha256' )
+        const readFileHashStream = fs.createReadStream( path.join( homeDir, args[0] ) )
+        const hash = crypto.createHash( 'sha256' )
 
         readFileHashStream.on( 'data', ( data ) => {
           hash.update( data )
-          
+
         } )
 
         readFileHashStream.on( 'end', () => {
-          console.log('\nSHA256: ', hash.digest('hex'));
-        })
-        
+          console.log( '\nSHA256: ', hash.digest( 'hex' ) );
+        } )
+
         break;
-      
-      
+
+
       case 'compress':
 
-      fs.mkdir( path.join( homeDir, args[1] ), {recursive: true}, ( err ) => {
-        if ( err ) {
-          console.log( 'Error creating new folder!' )
-        }
-          
-        const readFileToCompress = fs.createReadStream( path.join( homeDir, args[0] ) )
-        const writeCompressedFile = fs.createWriteStream( path.join( homeDir, args[1], `${ args[0] }.br` ) )
-        
-        const brotliCompress = zlib.createBrotliCompress();
+        fs.mkdir( path.join( homeDir, args[1] ), {recursive: true}, ( err ) => {
+          if ( err ) {
+            console.log( 'Error creating new folder!' )
+          }
 
-        pipeline( readFileToCompress, brotliCompress, writeCompressedFile, ( err ) => {
-          if(err) console.log(`\nError compressing!\n`,err )
-        }).on('finish', () => {console.log(`\nCompressed successfully!\n`, )})
-      } )
-        
+          const readFileToCompress = fs.createReadStream( path.join( homeDir, args[0] ) )
+          const writeCompressedFile = fs.createWriteStream( path.join( homeDir, args[1], `${ args[0] }.br` ) )
+
+          const brotliCompress = zlib.createBrotliCompress();
+
+          pipeline( readFileToCompress, brotliCompress, writeCompressedFile, ( err ) => {
+            if ( err ) console.log( `\nError compressing!\n`, err )
+          } ).on( 'finish', () => {console.log( `\nCompressed successfully!\n`, )} )
+        } )
+
         break;
-      
+
       case 'decompress':
 
-      const decompressedFileName = path.basename(path.join( homeDir, args[0] )   ).split('.br')[0]
-        
-      fs.mkdir( path.join( homeDir, args[1] ), {recursive: true}, ( err ) => {
-        if ( err ) {
-          console.log( 'Error creating new folder!' )
-        }
-          
-        const readFileToCompress = fs.createReadStream( path.join( homeDir, args[0] ) )
-        const writeCompressedFile = fs.createWriteStream( path.join( homeDir, args[1], decompressedFileName  ) )
-        
-        const brotliDecompress = zlib.createBrotliDecompress();
+        const decompressedFileName = path.basename( path.join( homeDir, args[0] ) ).split( '.br' )[0]
 
-        pipeline( readFileToCompress, brotliDecompress, writeCompressedFile, ( err ) => {
-          if(err) console.log(`\nError decompressing!\n`,err )
-        }).on('finish', () => {console.log(`\nDecompressed successfully!\n`, )})
-      } )
-        
+        fs.mkdir( path.join( homeDir, args[1] ), {recursive: true}, ( err ) => {
+          if ( err ) {
+            console.log( 'Error creating new folder!' )
+          }
+
+          const readFileToCompress = fs.createReadStream( path.join( homeDir, args[0] ) )
+          const writeCompressedFile = fs.createWriteStream( path.join( homeDir, args[1], decompressedFileName ) )
+
+          const brotliDecompress = zlib.createBrotliDecompress();
+
+          pipeline( readFileToCompress, brotliDecompress, writeCompressedFile, ( err ) => {
+            if ( err ) console.log( `\nError decompressing!\n`, err )
+          } ).on( 'finish', () => {console.log( `\nDecompressed successfully!\n`, )} )
+        } )
+
         break;
-      
+
       case '.exit':
 
-        console.log(`\nThank you for using File Manager, ${user}, goodbye!`);
+        console.log( `\nThank you for using File Manager, ${ user }, goodbye!` );
 
-        process.exit(0)
-        
+        process.exit( 0 )
+
         break;
 
       default:
@@ -233,10 +220,10 @@ const app = async () => {
   } )
 
   process.on( 'SIGINT', () => {
-    
-      console.log(`\nThank you for using File Manager, ${user}, goodbye!`);
 
-      process.exit(0)
+    console.log( `\nThank you for using File Manager, ${ user }, goodbye!` );
+
+    process.exit( 0 )
   } )
 }
 
