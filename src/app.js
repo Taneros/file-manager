@@ -12,8 +12,7 @@ import {cat} from './cat.js';
 import {add} from './add.js';
 import {rn} from './rn.js';
 import {cp} from './cp.js';
-import { mv } from './mv.js';
-
+import {mv} from './mv.js';
 
 
 process.stdin.setEncoding( 'utf8' )
@@ -55,46 +54,30 @@ const app = async () => {
 
       case 'cat':
 
-        cat(homeDir, args)
+        cat( homeDir, args )
 
         break;
 
       case 'add':
 
-        add(homeDir, args)
+        add( homeDir, args )
 
         break;
 
       case 'rn':
 
-        rn(homeDir, args)
+        rn( homeDir, args )
 
         break;
 
       case 'cp':
 
-        cp(homeDir, args)
+        cp( homeDir, args )
         break;
 
       case 'mv':
 
-        // fs.mkdir( path.join( homeDir, args[1] ), {recursive: true}, ( err ) => {
-        //   if ( err ) {
-        //     console.log( 'Error creating new folder!' )
-        //   }
-
-        //   fs.createReadStream( path.join( homeDir, args[0] ) ).pipe( fs.createWriteStream( path.join( homeDir, args[1], args[0] ) ) ).on( 'finish', () => {
-
-        //     fs.unlink( path.join( homeDir, args[0] ), ( err ) => {
-        //       if ( err ) {
-        //         console.log( "\nCould not delete the file. " + err, + '\n' )
-        //       }
-        //     } );
-        //     console.log( `\nMoving file done!\n` )
-        //   } )
-        // } )
-
-        mv(homeDir, args)
+        mv( homeDir, args )
 
         break;
 
@@ -115,7 +98,7 @@ const app = async () => {
 
             const cpusInfo = cpus().map( ( cpu ) => ( {Clock_GHz: ( cpu.speed / 1000 ).toFixed( 2 )} ) )
 
-            
+
             console.table( cpusInfo )
 
             break;
