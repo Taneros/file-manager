@@ -5,6 +5,8 @@ import path from 'path';
 import {pipeline} from 'stream';
 import zlib from 'zlib';
 
+import {up} from './up.js'
+
 
 process.stdin.setEncoding( 'utf8' )
 
@@ -27,11 +29,13 @@ const app = async () => {
 
       case 'up':
 
-        let oneStepBack = path.join( homeDir, '../' )
+        // let oneStepBack = path.join( homeDir, '../' )
 
-        homeDir = oneStepBack
+        // homeDir = oneStepBack
 
-        console.log( '\nCurrent directory is ', homeDir, '\n' )
+        // console.log( '\nCurrent directory is ', homeDir, '\n' )
+
+        homeDir = up(homeDir)
 
         break;
 
