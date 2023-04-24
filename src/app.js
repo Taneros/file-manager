@@ -11,7 +11,8 @@ import {ls} from './ls.js';
 import {cat} from './cat.js';
 import {add} from './add.js';
 import {rn} from './rn.js';
-import { cp } from './cp.js';
+import {cp} from './cp.js';
+import { mv } from './mv.js';
 
 
 
@@ -77,21 +78,23 @@ const app = async () => {
 
       case 'mv':
 
-        fs.mkdir( path.join( homeDir, args[1] ), {recursive: true}, ( err ) => {
-          if ( err ) {
-            console.log( 'Error creating new folder!' )
-          }
+        // fs.mkdir( path.join( homeDir, args[1] ), {recursive: true}, ( err ) => {
+        //   if ( err ) {
+        //     console.log( 'Error creating new folder!' )
+        //   }
 
-          fs.createReadStream( path.join( homeDir, args[0] ) ).pipe( fs.createWriteStream( path.join( homeDir, args[1], args[0] ) ) ).on( 'finish', () => {
+        //   fs.createReadStream( path.join( homeDir, args[0] ) ).pipe( fs.createWriteStream( path.join( homeDir, args[1], args[0] ) ) ).on( 'finish', () => {
 
-            fs.unlink( path.join( homeDir, args[0] ), ( err ) => {
-              if ( err ) {
-                console.log( "\nCould not delete the file. " + err, + '\n' )
-              }
-            } );
-            console.log( `\nMoving file done!\n` )
-          } )
-        } )
+        //     fs.unlink( path.join( homeDir, args[0] ), ( err ) => {
+        //       if ( err ) {
+        //         console.log( "\nCould not delete the file. " + err, + '\n' )
+        //       }
+        //     } );
+        //     console.log( `\nMoving file done!\n` )
+        //   } )
+        // } )
+
+        mv(homeDir, args)
 
         break;
 
