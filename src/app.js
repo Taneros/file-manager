@@ -10,7 +10,8 @@ import {cd} from './cd.js';
 import {ls} from './ls.js';
 import {cat} from './cat.js';
 import {add} from './add.js';
-import { rn } from './rn.js';
+import {rn} from './rn.js';
+import { cp } from './cp.js';
 
 
 
@@ -71,15 +72,7 @@ const app = async () => {
 
       case 'cp':
 
-        fs.mkdir( path.join( homeDir, args[1] ), {recursive: true}, ( err ) => {
-          if ( err ) {
-            console.log( 'Error creating new folder!' )
-          }
-
-          fs.createReadStream( path.join( homeDir, args[0] ) ).pipe( fs.createWriteStream( path.join( homeDir, args[1], args[0] ) ) ).on( 'finish', () => {
-            console.log( `\nCopying file done!\n` )
-          } )
-        } )
+        cp(homeDir, args)
         break;
 
       case 'mv':
