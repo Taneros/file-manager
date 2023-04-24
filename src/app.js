@@ -8,6 +8,7 @@ import zlib from 'zlib';
 import {up} from './up.js'
 import {cd} from './cd.js';
 import {ls} from './ls.js';
+import { cat } from './cat.js';
 
 
 
@@ -50,7 +51,8 @@ const app = async () => {
 
       case 'cat':
 
-        fs.createReadStream( path.resolve( homeDir, args[0] ) ).pipe( process.stdout )
+        // fs.createReadStream( path.resolve( homeDir, args[0] ) ).pipe( process.stdout )
+        cat(homeDir, args)
 
         break;
 
